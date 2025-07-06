@@ -10,7 +10,6 @@ use anyhow::Result;
 use args::Args;
 use config::Config;
 use gpg::GPG;
-use index::Index;
 use system_deps::SystemDeps;
 use web::Web;
 
@@ -19,7 +18,6 @@ async fn main() -> Result<()> {
     env_logger::init();
     SystemDeps::ensure_installed().await?;
     Config::read().await?;
-    Index::mkdir_p().await?;
 
     match Args::parse() {
         Args::StartServer => {

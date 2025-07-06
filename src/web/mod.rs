@@ -3,7 +3,7 @@ mod upload_error;
 
 use crate::{
     config::Config,
-    index::Index,
+    index::{Index, Upload},
     web::{app_state::AppState, upload_error::UploadError},
 };
 use anyhow::{Context as _, Result, bail};
@@ -21,11 +21,13 @@ pub(crate) struct Web;
 
 impl Web {
     pub(crate) async fn spawn() -> Result<()> {
+        let index = Index::new().await?;
+
         let app = Router::new()
             .route("/upload", post(upload))
             .route("/status", get(status))
             .fallback_service(ServeDir::new(Config::dir()))
-            .with_state(AppState::new());
+            .with_state(AppState::new(index));
 
         let listener = TcpListener::bind(("127.0.0.1", Config::port()))
             .await
@@ -51,8 +53,6 @@ async fn upload(
 ) -> Result<&'static str, UploadError> {
     log::info!("{:?}", headers);
 
-    let lock = state.lock.lock().await;
-
     auth(headers)?;
 
     while let Some(field) = multipart
@@ -60,20 +60,21 @@ async fn upload(
         .await
         .context("failed to read multipart field")?
     {
-        let name = field.name().context("empty name of the part")?.to_string();
+        let filename = field.name().context("empty name of the part")?.to_string();
 
-        ensure_filename_is_just_a_filename(&name)?;
+        ensure_filename_is_just_a_filename(&filename)?;
 
-        let bytes = field
+        let data = field
             .bytes()
             .await
-            .with_context(|| format!("failed to read bytes of the part {name:?}"))?
+            .with_context(|| format!("failed to read bytes of the part {filename:?}"))?
             .to_vec();
 
-        Index::write(name, bytes).await?;
-    }
+        log::info!("Saving {} ({} bytes)", filename, data.len());
+        let upload = Upload::new_in_tmp(data).await?;
 
-    drop(lock);
+        state.index.write(filename, upload).await?;
+    }
 
     Ok("Package has been succesfully processed")
 }

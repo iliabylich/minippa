@@ -1,15 +1,12 @@
-use std::sync::Arc;
-use tokio::sync::Mutex;
+use crate::index::Index;
 
 #[derive(Clone, Debug)]
 pub(crate) struct AppState {
-    pub(crate) lock: Arc<Mutex<()>>,
+    pub(crate) index: Index,
 }
 
 impl AppState {
-    pub(crate) fn new() -> Self {
-        Self {
-            lock: Arc::new(Mutex::new(())),
-        }
+    pub(crate) fn new(index: Index) -> Self {
+        Self { index }
     }
 }

@@ -24,6 +24,10 @@ impl GPG {
     pub(crate) async fn export_key() -> Result<()> {
         let stdout = bash!("gpg --armor --export {EMAIL}").await?;
 
+        tokio::fs::create_dir_all(Config::dir())
+            .await
+            .context("failed to create data dir")?;
+
         let dst = Path::new(Config::dir()).join("public.gpg");
         tokio::fs::write(dst, stdout)
             .await
