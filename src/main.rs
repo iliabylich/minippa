@@ -1,17 +1,16 @@
 mod args;
 mod bash;
 mod config;
-mod data_dir;
 mod gpg;
-mod reindex;
+mod index;
 mod system_deps;
 mod web;
 
 use anyhow::Result;
 use args::Args;
 use config::Config;
-use data_dir::DataDir;
 use gpg::GPG;
+use index::Index;
 use system_deps::SystemDeps;
 use web::Web;
 
@@ -20,7 +19,7 @@ async fn main() -> Result<()> {
     env_logger::init();
     SystemDeps::ensure_installed().await?;
     Config::read().await?;
-    DataDir::mkdir_p().await?;
+    Index::mkdir_p().await?;
 
     match Args::parse() {
         Args::StartServer => {

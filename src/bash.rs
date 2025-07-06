@@ -1,8 +1,8 @@
 use anyhow::{Context as _, Result, bail};
 use tokio::process::Command;
 
-pub(crate) async fn exec(script: &str) -> Result<String> {
-    log::info!("Running '{script}'");
+pub(crate) async fn exec(script: String) -> Result<String> {
+    log::info!("Running:\n{script}");
 
     let output = Command::new("bash")
         .arg("-c")
@@ -13,12 +13,11 @@ pub(crate) async fn exec(script: &str) -> Result<String> {
 
     let stdout = String::from_utf8(output.stdout)
         .with_context(|| format!("non-utf-8 stdout of bash script '{script}'"))?;
+    log::info!("stdout:");
+    log::info!("{stdout}");
 
     if !output.status.success() {
         log::error!("failed to execute bash script '{script}'");
-
-        log::error!("stdout:");
-        log::error!("{stdout}");
 
         let stderr = String::from_utf8(output.stderr)
             .with_context(|| format!("non-utf-8 stderr of bash script '{script}'"))?;
@@ -30,3 +29,11 @@ pub(crate) async fn exec(script: &str) -> Result<String> {
 
     Ok(stdout)
 }
+
+macro_rules! bash {
+    ($($arg:tt)*) => {{
+        let script = format!($($arg)*);
+        $crate::bash::exec(script)
+    }};
+}
+pub(crate) use bash;

@@ -49,11 +49,11 @@ impl Config {
         Self::get().dir.as_str()
     }
 
-    pub(crate) fn owner_email() -> &'static str {
+    pub(crate) const fn email() -> &'static str {
         "owner@this-repo.org"
     }
 
-    pub(crate) fn owner_name() -> &'static str {
+    pub(crate) const fn name() -> &'static str {
         "Owner Name"
     }
 }
@@ -64,8 +64,8 @@ impl std::fmt::Debug for Config {
             .field("port", &self.port)
             .field("token", &"*****")
             .field("dir", &self.dir)
-            .field("owner_email", &Self::owner_email())
-            .field("owner_name", &Self::owner_name())
+            .field("email", &Self::email())
+            .field("name", &Self::name())
             .finish()
     }
 }

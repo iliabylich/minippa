@@ -3,8 +3,7 @@ mod upload_error;
 
 use crate::{
     config::Config,
-    data_dir::DataDir,
-    reindex::reindex,
+    index::Index,
     web::{app_state::AppState, upload_error::UploadError},
 };
 use anyhow::{Context as _, Result, bail};
@@ -56,7 +55,6 @@ async fn upload(
 
     auth(headers)?;
 
-    let mut uploaded = false;
     while let Some(field) = multipart
         .next_field()
         .await
@@ -72,12 +70,7 @@ async fn upload(
             .with_context(|| format!("failed to read bytes of the part {name:?}"))?
             .to_vec();
 
-        DataDir::write(name, bytes).await?;
-        uploaded = true;
-    }
-
-    if uploaded {
-        reindex().await?;
+        Index::write(name, bytes).await?;
     }
 
     drop(lock);
