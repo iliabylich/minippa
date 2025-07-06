@@ -9,7 +9,7 @@ use crate::{
 use anyhow::{Context as _, Result, bail};
 use axum::{
     Router,
-    extract::{Multipart, State},
+    extract::{DefaultBodyLimit, Multipart, State},
     http::HeaderMap,
     routing::{get, post},
 };
@@ -25,6 +25,7 @@ impl Web {
 
         let app = Router::new()
             .route("/upload", post(upload))
+            .layer(DefaultBodyLimit::disable())
             .route("/status", get(status))
             .route("/install.sh", get(install_sh))
             .fallback_service(ServeDir::new(Config::dir()))

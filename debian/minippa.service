@@ -3,7 +3,7 @@ AssertPathExists=/usr/bin/minippa
 
 [Service]
 WorkingDirectory=~
-ExecStart=/usr/bin/minippa
+ExecStart=/usr/bin/minippa --start-server
 Restart=always
 PrivateTmp=false
 NoNewPrivileges=true
