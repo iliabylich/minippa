@@ -76,7 +76,7 @@ async fn upload(
         state.index.write(filename, upload).await?;
     }
 
-    Ok("Package has been succesfully processed")
+    Ok("Package has been successfully processed")
 }
 
 fn auth(headers: HeaderMap) -> Result<()> {
