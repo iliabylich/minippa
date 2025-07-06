@@ -1,0 +1,39 @@
+name: release
+
+on:
+  push:
+    branches: [ master ]
+    # tags:
+    #   - '*'
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-musl
+
+      - run: sudo apt update
+      - run: sudo apt install musl musl-dev
+
+      - name: install cargo-deb
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deb
+
+      - run: cargo deb --target=x86_64-unknown-linux-musl --strip
+
+      # - name: release
+      #   uses: ncipollo/release-action@v1
+      #   with:
+      #     artifactErrorsFailBuild: true
+      #     tag: ${{ github.ref_name }}
+      #     artifacts: target/x86_64-unknown-linux-musl/release/minippa,target/x86_64-unknown-linux-musl/debian/*.deb
+      #     token: ${{ secrets.GITHUB_TOKEN }}

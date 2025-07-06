@@ -2,6 +2,7 @@
 name = "minippa"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
 
 [dependencies]
 tower-http = { version = "0.6", features = ["fs"] }
@@ -13,3 +14,28 @@ serde = { version = "1", features = ["derive"] }
 log = "0.4"
 env_logger = "0.11"
 async-tempfile = "0.7"
+
+[profile.release]
+opt-level = "z"
+lto = true
+
+[package.metadata.deb]
+assets = [
+    [
+        "target/release/minippa",
+        "usr/bin/minippa",
+        "755",
+    ],
+    [
+        "debian/minippa.service",
+        "usr/lib/systemd/system/minippa.service",
+        "644",
+    ],
+]
+copyright = "2023, Ilya Bylich."
+depends = "$auto, systemd"
+extended-description = "A single-binary executable that acts as a Debian package server"
+maintainer = "minippa developer <ibylich@gmail.com>"
+maintainer-scripts = "debian/scripts"
+priority = "optional"
+section = "admin"
