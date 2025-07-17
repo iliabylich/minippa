@@ -1,6 +1,6 @@
 [package]
 name = "minippa"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2024"
 license = "MIT"
 description = "A single-binary executable that acts as a Debian package server"
