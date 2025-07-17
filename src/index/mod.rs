@@ -1,8 +1,10 @@
 mod entry;
+mod package;
 mod raw_index;
 mod upload;
 
 use anyhow::Result;
+pub(crate) use package::Package;
 use raw_index::RawIndex;
 use std::sync::Arc;
 use tokio::sync::Mutex;

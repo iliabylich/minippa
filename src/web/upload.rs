@@ -3,7 +3,7 @@ use std::path::Path;
 use crate::{
     config::Config,
     index::Upload,
-    web::{app_state::AppState, upload_error::UploadError},
+    web::{app_error::AppError, app_state::AppState},
 };
 use anyhow::{Context as _, Result, bail};
 use axum::{
@@ -15,7 +15,7 @@ pub(crate) async fn upload(
     headers: HeaderMap,
     State(state): State<AppState>,
     mut multipart: Multipart,
-) -> Result<&'static str, UploadError> {
+) -> Result<&'static str, AppError> {
     log::info!("{:?}", headers);
 
     auth(headers)?;

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Packages list</title>
+
+    <style>
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        table {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Version</th>
+            <th>Uploaded At</th>
+        </tr>
+
+        {% for package in packages %}
+        <tr>
+            <td>
+                <a href="/packages/{{ package.name }}">{{ package.name }}</a>
+            </td>
+            <td>{{ package.version }}</td>
+            <td>{{ package.uploaded_at }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>
