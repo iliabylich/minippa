@@ -1,55 +1,31 @@
 mod config;
 
-use crate::{
-    bash::bash,
-    config::{Config, EMAIL},
-};
-use anyhow::{Context as _, Result, bail};
+use crate::{bash::bash, config::EMAIL};
+use anyhow::{Result, bail};
 use config::GpgConfig;
-use std::path::Path;
 
 #[expect(clippy::upper_case_acronyms)]
 pub(crate) struct GPG;
 
 impl GPG {
     pub(crate) async fn generate_key() -> Result<()> {
-        if key_exists().await {
+        let key_exists = bash!("gpg --list-key {EMAIL}")
+            .await
+            .is_ok_and(|stdout| stdout.contains(EMAIL));
+        if key_exists {
             bail!("GPG key for {EMAIL} already exists. Either use it as is or remove manually.",);
         }
+
         let gpg_config = GpgConfig::new().await?;
-        generate(gpg_config).await?;
+        bash!("gpg --batch --gen-key {:?}", gpg_config.path()).await?;
+
+        let key = bash!("gpg --list-key {EMAIL}").await?;
+        log::info!("Success:\n{key}");
 
         Ok(())
     }
 
-    pub(crate) async fn export_key() -> Result<()> {
-        let stdout = bash!("gpg --armor --export {EMAIL}").await?;
-
-        tokio::fs::create_dir_all(&Config::get().dir)
-            .await
-            .context("failed to create data dir")?;
-
-        let dst = Path::new(&Config::get().dir).join("public.gpg");
-        tokio::fs::write(dst, stdout)
-            .await
-            .context("failed to write public.gpg")?;
-
-        Ok(())
+    pub(crate) async fn export_key() -> Result<String> {
+        bash!("gpg --armor --export {EMAIL}").await
     }
-}
-
-async fn key_exists() -> bool {
-    match bash!("gpg --list-key {EMAIL}").await {
-        Ok(stdout) => stdout.contains(EMAIL),
-        Err(_) => false,
-    }
-}
-
-async fn generate(gpg_config: GpgConfig) -> Result<()> {
-    bash!("gpg --batch --gen-key {:?}", gpg_config.path()).await?;
-
-    let key = bash!("gpg --list-key {EMAIL}").await?;
-    log::info!("Success:\n{key}");
-
-    Ok(())
 }

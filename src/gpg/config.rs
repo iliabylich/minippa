@@ -4,9 +4,7 @@ use async_tempfile::TempFile;
 use std::path::PathBuf;
 use tokio::io::AsyncWriteExt as _;
 
-pub(crate) struct GpgConfig {
-    f: TempFile,
-}
+pub(crate) struct GpgConfig(TempFile);
 
 impl GpgConfig {
     pub(crate) async fn new() -> Result<Self> {
@@ -33,10 +31,10 @@ Expire-Date: 0
             .await
             .context("failed to write GPG config to tempfile")?;
 
-        Ok(Self { f })
+        Ok(Self(f))
     }
 
     pub(crate) fn path(&self) -> &PathBuf {
-        self.f.file_path()
+        self.0.file_path()
     }
 }

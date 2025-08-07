@@ -1,30 +1,20 @@
-mod entry;
+mod ctl;
+mod find;
+mod list;
+mod make_install_script;
 mod package;
-mod raw_index;
+mod request;
+mod task;
 mod upload;
+mod write_gpg_key;
 
-use anyhow::Result;
+pub(crate) use ctl::IndexCtl;
 pub(crate) use package::Package;
-use raw_index::RawIndex;
-use std::sync::Arc;
-use tokio::sync::Mutex;
-pub(crate) use upload::Upload;
+use task::IndexTask;
+use tokio::task::JoinHandle;
 
-#[derive(Clone, Debug)]
-pub(crate) struct Index {
-    inner: Arc<Mutex<RawIndex>>,
-}
-
-impl Index {
-    pub(crate) async fn new() -> Result<Self> {
-        Ok(Self {
-            inner: Arc::new(Mutex::new(RawIndex::new().await?)),
-        })
-    }
-
-    pub(crate) async fn write(&self, filename: String, upload: Upload) -> Result<()> {
-        let inner = self.inner.lock().await;
-        inner.write(filename, upload).await?;
-        Ok(())
-    }
+pub(crate) fn spawn(dir: &str) -> (JoinHandle<()>, IndexCtl) {
+    let (handle, tx) = IndexTask::spawn(dir);
+    let ctl = IndexCtl::new(tx);
+    (handle, ctl)
 }

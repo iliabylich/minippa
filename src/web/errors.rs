@@ -1,7 +1,7 @@
 use axum::{http::StatusCode, response::IntoResponse};
 
 #[derive(Debug)]
-pub(crate) struct AppError(anyhow::Error);
+pub(crate) struct AppError(pub(crate) anyhow::Error);
 
 impl std::fmt::Display for AppError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
