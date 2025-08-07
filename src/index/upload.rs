@@ -48,7 +48,7 @@ impl Upload {
         }
 
         let src = tempfile.file_path().clone();
-        let dst = PathBuf::from(Config::dir()).join(&filename);
+        let dst = PathBuf::from(&Config::get().dir).join(&filename);
 
         log::info!("Copying {src:?} -> {dst:?}");
         tokio::fs::copy(&src, &dst)

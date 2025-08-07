@@ -49,7 +49,7 @@ impl Package {
 }
 
 async fn packages() -> Result<String> {
-    let path = PathBuf::from(Config::dir()).join("Packages");
+    let path = PathBuf::from(&Config::get().dir).join("Packages");
     let contents = tokio::fs::read_to_string(path)
         .await
         .context("failed to read Packages file")?;
@@ -66,7 +66,7 @@ fn line_with_prefix(text: &str, prefix: &str) -> Result<String> {
 }
 
 async fn uploaded_at(filename: String) -> Result<String> {
-    let path = PathBuf::from(Config::dir()).join(filename);
+    let path = PathBuf::from(&Config::get().dir).join(filename);
     let metadata = tokio::fs::metadata(&path)
         .await
         .with_context(|| format!("failed to get metadata of {path:?}"))?;

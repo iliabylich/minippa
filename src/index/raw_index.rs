@@ -1,4 +1,8 @@
-use crate::{bash::bash, config::Config, index::Upload};
+use crate::{
+    bash::bash,
+    config::{Config, EMAIL},
+    index::Upload,
+};
 use anyhow::{Context as _, Result};
 
 #[derive(Debug)]
@@ -6,10 +10,10 @@ pub(crate) struct RawIndex;
 
 impl RawIndex {
     pub(crate) async fn new() -> Result<Self> {
-        tokio::fs::create_dir_all(Config::dir())
+        tokio::fs::create_dir_all(&Config::get().dir)
             .await
             .context("failed to create data dir")?;
-        log::info!("Data dir at {} exists", Config::dir());
+        log::info!("Data dir at {} exists", Config::get().dir);
 
         Ok(Self)
     }
@@ -31,11 +35,10 @@ rm -f Packages Packages.gz Release Release.gpg InRelease
 dpkg-scanpackages --multiversion . > Packages 2> /dev/null
 gzip -k -f Packages
 apt-ftparchive release . > Release
-gpg --default-key "{email}" -abs -o - Release > Release.gpg
-gpg --default-key "{email}" --clearsign -o - Release > InRelease
+gpg --default-key "{EMAIL}" -abs -o - Release > Release.gpg
+gpg --default-key "{EMAIL}" --clearsign -o - Release > InRelease
     "#,
-        dir = Config::dir(),
-        email = Config::email(),
+        dir = Config::get().dir,
     )
     .await?;
 

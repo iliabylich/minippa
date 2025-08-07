@@ -52,7 +52,7 @@ fn auth(headers: HeaderMap) -> Result<()> {
         bail!("non-utf-8 Token header");
     };
 
-    if token == Config::token() {
+    if token == Config::get().token {
         Ok(())
     } else {
         bail!("invalid token")

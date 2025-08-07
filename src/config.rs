@@ -4,9 +4,9 @@ use tokio::sync::OnceCell;
 
 #[derive(Deserialize)]
 pub(crate) struct Config {
-    port: u16,
-    token: String,
-    dir: String,
+    pub(crate) port: u16,
+    pub(crate) token: String,
+    pub(crate) dir: String,
 }
 
 #[cfg(debug_assertions)]
@@ -14,6 +14,9 @@ const CONFIG_PATH: &str = "config.toml";
 
 #[cfg(not(debug_assertions))]
 const CONFIG_PATH: &str = "/etc/minippa.toml";
+
+pub(crate) const EMAIL: &str = "owner@this-repo.org";
+pub(crate) const NAME: &str = "Owner Name";
 
 static CONFIG: OnceCell<Config> = OnceCell::const_new();
 
@@ -33,28 +36,8 @@ impl Config {
         Ok(())
     }
 
-    fn get() -> &'static Self {
+    pub(crate) fn get() -> &'static Self {
         CONFIG.get().expect("Config is not initialized")
-    }
-
-    pub(crate) fn port() -> u16 {
-        Self::get().port
-    }
-
-    pub(crate) fn token() -> &'static str {
-        Self::get().token.as_str()
-    }
-
-    pub(crate) fn dir() -> &'static str {
-        Self::get().dir.as_str()
-    }
-
-    pub(crate) const fn email() -> &'static str {
-        "owner@this-repo.org"
-    }
-
-    pub(crate) const fn name() -> &'static str {
-        "Owner Name"
     }
 }
 
@@ -64,8 +47,6 @@ impl std::fmt::Debug for Config {
             .field("port", &self.port)
             .field("token", &"*****")
             .field("dir", &self.dir)
-            .field("email", &Self::email())
-            .field("name", &Self::name())
             .finish()
     }
 }

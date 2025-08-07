@@ -1,11 +1,12 @@
 mod config;
 
-use crate::{bash::bash, config::Config};
+use crate::{
+    bash::bash,
+    config::{Config, EMAIL},
+};
 use anyhow::{Context as _, Result, bail};
 use config::GpgConfig;
 use std::path::Path;
-
-const EMAIL: &str = Config::email();
 
 #[expect(clippy::upper_case_acronyms)]
 pub(crate) struct GPG;
@@ -24,11 +25,11 @@ impl GPG {
     pub(crate) async fn export_key() -> Result<()> {
         let stdout = bash!("gpg --armor --export {EMAIL}").await?;
 
-        tokio::fs::create_dir_all(Config::dir())
+        tokio::fs::create_dir_all(&Config::get().dir)
             .await
             .context("failed to create data dir")?;
 
-        let dst = Path::new(Config::dir()).join("public.gpg");
+        let dst = Path::new(&Config::get().dir).join("public.gpg");
         tokio::fs::write(dst, stdout)
             .await
             .context("failed to write public.gpg")?;

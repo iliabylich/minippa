@@ -1,4 +1,4 @@
-use crate::config::Config;
+use crate::config::{EMAIL, NAME};
 use anyhow::{Context as _, Result};
 use async_tempfile::TempFile;
 use std::path::PathBuf;
@@ -22,13 +22,11 @@ Key-Usage: cert,sign
 Subkey-Type: RSA
 Subkey-Length: 4096
 Subkey-Usage: encrypt
-Name-Real: {}
-Name-Email: {}
+Name-Real: {NAME}
+Name-Email: {EMAIL}
 Expire-Date: 0
 %commit
-"#,
-            Config::name(),
-            Config::email()
+"#
         );
 
         f.write_all(contents.as_bytes())

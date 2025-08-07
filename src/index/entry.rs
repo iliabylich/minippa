@@ -16,7 +16,7 @@ impl Entry {
     }
 
     pub(crate) async fn remove_previous_versions(&self) -> Result<()> {
-        let mut dir = tokio::fs::read_dir(Config::dir())
+        let mut dir = tokio::fs::read_dir(&Config::get().dir)
             .await
             .context("failed to list files of data dir")?;
 

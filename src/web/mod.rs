@@ -32,10 +32,10 @@ impl Web {
             .route("/install.sh", get(install_sh))
             .route("/packages", get(list))
             .route("/packages/{name}", get(one))
-            .fallback_service(ServeDir::new(Config::dir()))
+            .fallback_service(ServeDir::new(&Config::get().dir))
             .with_state(AppState::new(index));
 
-        let listener = TcpListener::bind(("127.0.0.1", Config::port()))
+        let listener = TcpListener::bind(("127.0.0.1", Config::get().port))
             .await
             .context("failed to bind")?;
         log::info!(
