@@ -1,0 +1,13 @@
+[tasks.clean]
+run = 'rm -f data-dir/InRelease data-dir/Packages data-dir/Packages.gz data-dir/Release data-dir/Release.gpg data-dir/*.deb'
+
+[tasks.key-delete]
+run = 'gpg --delete-secret-and-public-keys "owner@this-repo.org"'
+
+[tasks.key-generate]
+env = { RUST_LOG = "info" }
+run = 'cargo run -- --generate-key'
+
+[tasks.run]
+env = { RUST_LOG = "info" }
+run = 'cargo run -- --start-server'
