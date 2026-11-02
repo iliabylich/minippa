@@ -1,3 +1,18 @@
+monorepo_root = true
+
+[monorepo]
+config_roots = [".github"]
+
+[tools]
+cargo-binstall = "latest"
+
+[settings]
+cargo.binstall_quickinstall = true
+cargo.binstall_only = true
+
+[task_config]
+shell = "bash -euo pipefail -c"
+
 [tasks.clean]
 run = 'rm -f data-dir/InRelease data-dir/Packages data-dir/Packages.gz data-dir/Release data-dir/Release.gpg data-dir/*.deb'
 
@@ -11,3 +26,17 @@ run = 'cargo run -- --generate-key'
 [tasks.run]
 env = { RUST_LOG = "info" }
 run = 'cargo run -- --start-server'
+
+[tasks.release]
+run = 'cargo build --release --target=x86_64-unknown-linux-musl'
+
+[tasks."cargo:outdated"]
+hide = true
+tools = { "cargo:cargo-outdated" = "latest" }
+run = "cargo outdated"
+
+[tasks.outdated]
+run = [
+    { task = "cargo:outdated" },
+    { task = "//.github:outdated" },
+]

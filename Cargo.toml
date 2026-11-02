@@ -22,24 +22,3 @@ futures = "0.3"
 [profile.release]
 opt-level = "z"
 lto = true
-
-[package.metadata.deb]
-assets = [
-    [
-        "target/release/minippa",
-        "usr/bin/minippa",
-        "755",
-    ],
-    [
-        "debian/minippa.service",
-        "usr/lib/systemd/system/minippa.service",
-        "644",
-    ],
-]
-copyright = "2023, Ilya Bylich."
-depends = "$auto, systemd"
-extended-description = "A single-binary executable that acts as a Debian package server"
-maintainer = "minippa developer <ibylich@gmail.com>"
-maintainer-scripts = "debian/scripts"
-priority = "optional"
-section = "admin"

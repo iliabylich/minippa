@@ -8,9 +8,8 @@ Pick the one you like:
 
 1. `cargo install minippa`
 2. Download the latest binary directly from the latest release
-3. Download a DEB package from the latest release
 
-The DEB package contains a systemd service, which should slightly simplify your setup.
+The release also contains a systemd service (`minippa.service`), which should slightly simplify your setup.
 
 ### Configuration
 
